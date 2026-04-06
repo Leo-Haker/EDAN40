@@ -27,6 +27,8 @@ newtype Rule = Rule (Pattern String, [Template String])
 
 type BotBrain = [Rule]
 
+
+
 chatterbot :: String -> [(String, [String])] -> IO ()
 chatterbot botName botRules = do
     putStrLn ("\n\nHi! I am " ++ botName ++ ". How are you?")
@@ -147,7 +149,9 @@ reductionsApply = undefined
 -- Replaces a wildcard in a template with the list given as the third argument
 substitute :: Eq a => Template a -> [a] -> [a]
 {- TO BE WRITTEN -}
-substitute = undefined
+substitute (Pattern t) s =  concatMap(\x -> case x of 
+                                Wildcard -> s 
+                                Item x-> [x])t
 
 -- Tries to match two lists. If they match, the result consists of the sublist
 -- bound to the wildcard in the pattern list.

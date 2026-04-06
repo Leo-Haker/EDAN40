@@ -164,6 +164,7 @@ As a warm-up, **write a function** `mkPattern` which takes a wildcard and a list
 
 ```{.haskell}
 mkPattern :: Eq a => a -> [a] -> Pattern a
+mkPattern a xs = Pattern (map(\x -> if x == a then Wildcard else Item x)xs) 
 
 -- For example, treating a '*' as a wildcard
 ghci> mkPattern '*' "Hi *!"
@@ -185,6 +186,10 @@ ghci> substitute (mkPattern 'x' "3*cos(x) + 4 - x") "5.37"
 "3*cos(5.37) + 4 - 5.37"
 ```
 **Write the `substitute` function**.
+substitute :: Eq a => Template a -> [a] -> [a]
+substitute (Pattern t) s =  concatMap(\x -> case x of 
+                                Wildcard -> s 
+                                Item x-> [x])t
 
 ### Match
 
