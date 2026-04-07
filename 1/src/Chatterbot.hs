@@ -165,18 +165,29 @@ substitute (Pattern t) s =  concatMap(\x -> case x of
 
 p1 :: Pattern Char
 p1 = mkPattern '*' "hej"
+p2 :: Pattern Char
+p2 = mkPattern '*' "*hej"
 
-s :: [Char] 
-s = "hej"
+s1 :: [Char] 
+s1 = "hej"
+s2 :: [Char] 
+s2 = "bhejc"
 
 match :: Eq a => Pattern a -> [a] -> Maybe [a]
--- Empty pattern and list, and they are the same
--- >>> match (p1) s
--- Nothing
+-- Nedan funkar inte om det finns flera vildcards
+-- >>> match p1 s1
+-- >>> match p2 s2
+-- Just ""
+-- Just "b"
 
 match (Pattern _) [] = Nothing
 match (Pattern []) _ = Nothing
-match (Pattern (y:ys)) x:xs = 
+match (Pattern ps) xs
+    | Wildcard `notElem` ps = Just []
+    | otherwise = singleWildcardMatch (Pattern ps) xs 
+    -- tror det sen ska vara "otherwise" ska vara något i stil med "mmap longerWildcardMatch (singleWildcardMatch (Pattern ps) xs)"
+
+{- match (Pattern (y:ys)) x:xs = 
   if y == Wildcard then
     rekursion y ys x:xs
   else
@@ -187,8 +198,9 @@ match (Pattern (y:ys)) x:xs =
   where 
     rekursion y ys x:xs =
 
-        
-      
+        singleWildcardMatch ++ longerWildcardMatch
+      -}
+
 
 
 -- Helper function to match
