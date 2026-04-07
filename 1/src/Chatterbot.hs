@@ -109,9 +109,11 @@ ruleCompile = undefined
 
 -- We can make a pattern from a list of elements
 -- If we choose one element that represents the wildcard
--- >>> mkPattern '*' "Hi *!" => [Item 'H', Item 'i', Wildcard, Item '!']
+-- >>> mkPattern '*' "Hi *!"
+-- Pattern [Item 'H',Item 'i',Item ' ',Wildcard,Item '!']
 
--- >>> mkPattern 'a' s 
+
+
 mkPattern :: Eq a => a -> [a] -> Pattern a
 {- TO BE WRITTEN -}
 mkPattern a xs = Pattern (map(\x -> if x == a then Wildcard else Item x)xs) 
@@ -160,18 +162,33 @@ substitute (Pattern t) s =  concatMap(\x -> case x of
 -- Tries to match two lists. If they match, the result consists of the sublist
 -- bound to the wildcard in the pattern list.
 
+
+p1 :: Pattern Char
+p1 = mkPattern '*' "hej"
+
+s :: [Char] 
+s = "hej"
+
 match :: Eq a => Pattern a -> [a] -> Maybe [a]
 -- Empty pattern and list, and they are the same
--- >>> match (mkPattern "a" "hello my friend") "hello my friend"
-match p s 
-    | _ [] = Nothing 
-    | Pattern [] _ = Nothing 
-    | Pattern p == s = Just []
-    | s
-    | otherwise = Just ["Fel"]
+-- >>> match (p1) s
+-- Nothing
 
+match (Pattern _) [] = Nothing
+match (Pattern []) _ = Nothing
+match (Pattern (y:ys)) x:xs = 
+  if y == Wildcard then
+    rekursion y ys x:xs
+  else
+    if item y == x then
+      rekusion2 ys xs
+    else
+      rekursion2 y:ys xs
+  where 
+    rekursion y ys x:xs =
 
-
+        
+      
 
 
 -- Helper function to match
