@@ -6,6 +6,7 @@ import Data.Maybe
 
 -- If you're not sure what this is, it's ok.
 import Control.Monad (mapM)
+import Data.Maybe (Maybe(Nothing))
 
 -- A pattern is a list of things
 -- Where we have either a value or a wildcard
@@ -36,7 +37,7 @@ chatterbot botName botRules = do
   where
     brain = rulesCompile botRules
     botloop = do
-      putStr "\n: "
+      putStr "\n: "S
       question <- getLine
       answer <- stateOfMind brain
       putStrLn (botName ++ ": " ++ (present . answer . prepare) question)
@@ -108,10 +109,12 @@ ruleCompile = undefined
 
 -- We can make a pattern from a list of elements
 -- If we choose one element that represents the wildcard
--- mkPattern '*' "Hi *!" => [Item 'H', Item 'i', Wildcard, Item '!']
+-- >>> mkPattern '*' "Hi *!" => [Item 'H', Item 'i', Wildcard, Item '!']
+
+-- >>> mkPattern 'a' s 
 mkPattern :: Eq a => a -> [a] -> Pattern a
 {- TO BE WRITTEN -}
-mkPattern = undefined
+mkPattern a xs = Pattern (map(\x -> if x == a then Wildcard else Item x)xs) 
 
 stringToPattern :: String -> String -> Pattern String
 stringToPattern wc = mkPattern wc . words
@@ -153,11 +156,23 @@ substitute (Pattern t) s =  concatMap(\x -> case x of
                                 Wildcard -> s 
                                 Item x-> [x])t
 
+
 -- Tries to match two lists. If they match, the result consists of the sublist
 -- bound to the wildcard in the pattern list.
+
 match :: Eq a => Pattern a -> [a] -> Maybe [a]
-{- TO BE WRITTEN -}
-match = undefined
+-- Empty pattern and list, and they are the same
+-- >>> match (mkPattern "a" "hello my friend") "hello my friend"
+match p s 
+    | _ [] = Nothing 
+    | Pattern [] _ = Nothing 
+    | Pattern p == s = Just []
+    | s
+    | otherwise = Just ["Fel"]
+
+
+
+
 
 -- Helper function to match
 singleWildcardMatch, longerWildcardMatch :: Eq a => Pattern a -> [a] -> Maybe [a]
@@ -165,8 +180,10 @@ singleWildcardMatch (Pattern (Wildcard:ps)) (x:xs) =
   case match (Pattern ps) xs of
     Nothing -> Nothing
     Just _ -> Just [x]
+
+
 {- TO BE WRITTEN -}
-longerWildcardMatch = undefined
+longerWildcardMatch (Pattern (Wildcard:ps)) xs = undefined
 
 
 

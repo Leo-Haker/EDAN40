@@ -191,6 +191,8 @@ substitute (Pattern t) s =  concatMap(\x -> case x of
                                 Wildcard -> s 
                                 Item x-> [x])t
 
+
+
 ### Match
 
 The function `match p s` tries to match the pattern `p` with the list `s`.
