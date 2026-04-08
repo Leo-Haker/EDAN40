@@ -181,15 +181,15 @@ match :: Eq a => Pattern a -> [a] -> Maybe [a]
 match (Pattern _) [] = Nothing
 match (Pattern []) _ = Nothing
 match (Pattern ps) xs
-    | Wildcard `notElem` ps && not theSame = Nothing
+    | Wildcard `notElem` ps && not theSame = Nothing -- <-> notElem Wildcard ps ...
     | Wildcard `notElem` ps && theSame = Just []
     | otherwise = orElse single longer
     where 
       ss = zip ps xs --[(PatternElem a, a)]
-      sameLength = length ps == length xs -- kontrollerar längd
+      sameLength = length ps == length xs 
       theSame = all (\( p, x) -> p ==  Item x) ss && sameLength 
       single = singleWildcardMatch (Pattern ps) xs 
-      longer = longerWildcardMatch (Pattern ps) xs
+      -- longer = longerWildcardMatch (Pattern ps) xs
       
 
 {- match (Pattern (y:ys)) x:xs = 
