@@ -183,10 +183,15 @@ match :: Eq a => Pattern a -> [a] -> Maybe [a]
 match (Pattern _) [] = Nothing
 match (Pattern []) _ = Nothing
 match (Pattern ps) xs
-    | Wildcard `notElem` ps = Just []
+    -- Kollar om det inte finns Wildcard i ps
+    | Wildcard `notElem` ps && theSame = Just []
+    -- Check för att se om single.. funkar. Kombinera denna med longerWildcardMatch
     | otherwise = singleWildcardMatch (Pattern ps) xs 
     -- tror det sen ska vara "otherwise" ska vara något i stil med "mmap longerWildcardMatch (singleWildcardMatch (Pattern ps) xs)"
-
+    where 
+      ss = zip ps xs --[(PatternElem a, a)]
+      theSame = all (\( p, x) -> p ==  Item x) ss 
+      
 {- match (Pattern (y:ys)) x:xs = 
   if y == Wildcard then
     rekursion y ys x:xs
