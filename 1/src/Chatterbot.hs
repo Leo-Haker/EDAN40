@@ -171,7 +171,7 @@ p2 = mkPattern '*' "*hej"
 s1 :: [Char] 
 s1 = "hej"
 s2 :: [Char] 
-s2 = "bhejc"
+s2 = "bhej"
 
 match :: Eq a => Pattern a -> [a] -> Maybe [a]
 -- Nedan funkar inte om det finns flera vildcards
@@ -184,14 +184,19 @@ match (Pattern _) [] = Nothing
 match (Pattern []) _ = Nothing
 match (Pattern ps) xs
     -- Kollar om det inte finns Wildcard i ps
+    | Wildcard `notElem` ps && not theSame = Nothing
     | Wildcard `notElem` ps && theSame = Just []
     -- Check för att se om single.. funkar. Kombinera denna med longerWildcardMatch
-    | otherwise = singleWildcardMatch (Pattern ps) xs 
+    | otherwise = orElse single longer
     -- tror det sen ska vara "otherwise" ska vara något i stil med "mmap longerWildcardMatch (singleWildcardMatch (Pattern ps) xs)"
     where 
       ss = zip ps xs --[(PatternElem a, a)]
-      theSame = all (\( p, x) -> p ==  Item x) ss 
+      sameLength = length ps == length xs -- kontrollerar längd
+      theSame = all (\( p, x) -> p ==  Item x) ss && sameLength 
+      single = singleWildcardMatch (Pattern ps) xs 
+      longer = longerWildcardMatch (Pattern ps) xs
       
+
 {- match (Pattern (y:ys)) x:xs = 
   if y == Wildcard then
     rekursion y ys x:xs
