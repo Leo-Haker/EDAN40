@@ -172,23 +172,18 @@ s1 :: [Char]
 s1 = "hej"
 s2 :: [Char] 
 s2 = "bhej"
-
-match :: Eq a => Pattern a -> [a] -> Maybe [a]
--- Nedan funkar inte om det finns flera vildcards
 -- >>> match p1 s1
 -- >>> match p2 s2
 -- Just ""
 -- Just "b"
 
+match :: Eq a => Pattern a -> [a] -> Maybe [a]
 match (Pattern _) [] = Nothing
 match (Pattern []) _ = Nothing
 match (Pattern ps) xs
-    -- Kollar om det inte finns Wildcard i ps
     | Wildcard `notElem` ps && not theSame = Nothing
     | Wildcard `notElem` ps && theSame = Just []
-    -- Check för att se om single.. funkar. Kombinera denna med longerWildcardMatch
     | otherwise = orElse single longer
-    -- tror det sen ska vara "otherwise" ska vara något i stil med "mmap longerWildcardMatch (singleWildcardMatch (Pattern ps) xs)"
     where 
       ss = zip ps xs --[(PatternElem a, a)]
       sameLength = length ps == length xs -- kontrollerar längd
