@@ -64,28 +64,36 @@ rulesApply :: [(Pattern String, Template String)] -> Phrase -> Phrase
 {- TO BE WRITTEN -}
 rulesApply = undefined
 
-reflect :: Phrase -> Phrase
-{- TO BE WRITTEN -}
-reflect = undefined
 
+-- >>>reflect ["i", "will", "never", "see", "my","reflection", "in", "your", "eyes"] 
+
+{-
+Facit 
+["you", "will", "never", "see", "your",
+         "reflection", "in", "my", "eyes"]
+-}
+        
+reflect :: Phrase -> Phrase
+{- TO BE WRITTEN -} 
+reflect ps = map(\p -> foldr(\r acc -> if p == (fst r) then (snd r) else acc)p reflections) ps
 reflections =
-  [ ("am",     "are"),
-    ("was",    "were"),
-    ("i",      "you"),
-    ("i'm",    "you are"),
-    ("i'd",    "you would"),
-    ("i've",   "you have"),
-    ("i'll",   "you will"),
-    ("my",     "your"),
-    ("me",     "you"),
-    ("are",    "am"),
-    ("you're", "i am"),
-    ("you've", "i have"),
-    ("you'll", "i will"),
-    ("your",   "my"),
-    ("yours",  "mine"),
-    ("you",    "me")
-  ]
+    [ ("am",     "are"),
+        ("was",    "were"),
+        ("i",      "you"),
+        ("i'm",    "you are"),
+        ("i'd",    "you would"),
+        ("i've",   "you have"),
+        ("i'll",   "you will"),
+        ("my",     "your"),
+        ("me",     "you"),
+        ("are",    "am"),
+        ("you're", "i am"),
+        ("you've", "i have"),
+        ("you'll", "i will"),
+        ("your",   "my"),
+        ("yours",  "mine"),
+        ("you",    "me")
+    ]
 
 
 ---------------------------------------------------------------------------------
