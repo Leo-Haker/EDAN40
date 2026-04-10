@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-overlapping-patterns #-}
 module Chatterbot where
 import Utilities
 import System.Random
@@ -7,6 +8,7 @@ import Data.Maybe
 -- If you're not sure what this is, it's ok.
 import Control.Monad (mapM)
 import Data.Maybe (Maybe(Nothing))
+import qualified Data.Maybe as Data
 
 -- A pattern is a list of things
 -- Where we have either a value or a wildcard
@@ -37,7 +39,7 @@ chatterbot botName botRules = do
   where
     brain = rulesCompile botRules
     botloop = do
-      putStr "\n: "S
+      putStr "\n: "
       question <- getLine
       answer <- stateOfMind brain
       putStrLn (botName ++ ": " ++ (present . answer . prepare) question)
@@ -163,61 +165,80 @@ substitute (Pattern t) s =  concatMap(\x -> case x of
 -- bound to the wildcard in the pattern list.
 
 
+
+
+-- >>>match (mkPattern '*' "frodo") "gandalf" 
+-- >>>match (mkPattern 'x' "2*x+3+x") "2*7+3" 
+-- >>>match (mkPattern 'x' "abcd") "abcd" 
+-- >>>match (mkPattern 2 [1,3..5]) [1,3..5]
+-- >>>match (mkPattern 'x' "2*x+3") "2*7+3"
+-- >>>match (mkPattern '*' "* and *") "you and me"
+-- Nothing
+-- Nothing
+-- Just ""
+-- Just []
+-- Just "7"
+-- Just "you"
+
+
+{-
+FACIT:
+Nothing
+Nothing
+Just[]
+Just[]
+Just["7"]
+Just["you"]
+
+-}
 p1 :: Pattern Char
 p1 = mkPattern '*' "hej"
 p2 :: Pattern Char
-p2 = mkPattern '*' "*hej"
+p2 = mkPattern '*' "h*ej"
 
 s1 :: [Char] 
 s1 = "hej"
 s2 :: [Char] 
-s2 = "bhej"
+s2 = "bheej"
 -- >>> match p1 s1
 -- >>> match p2 s2
 -- Just ""
--- Just "b"
-
+-- Nothing
+a = mkPattern '*' "* and *"
+-- >>>match a "you and me"
+-- Just "you"
 match :: Eq a => Pattern a -> [a] -> Maybe [a]
+match (Pattern []) [] = Just []  -- Vi saknade detta base case
 match (Pattern _) [] = Nothing
 match (Pattern []) _ = Nothing
-match (Pattern ps) xs
-    | Wildcard `notElem` ps && not theSame = Nothing -- <-> notElem Wildcard ps ...
-    | Wildcard `notElem` ps && theSame = Just []
-    | otherwise = orElse single longer
-    where 
-      ss = zip ps xs --[(PatternElem a, a)]
-      sameLength = length ps == length xs 
-      theSame = all (\( p, x) -> p ==  Item x) ss && sameLength 
-      single = singleWildcardMatch (Pattern ps) xs 
-      -- longer = longerWildcardMatch (Pattern ps) xs
-      
-
-{- match (Pattern (y:ys)) x:xs = 
-  if y == Wildcard then
-    rekursion y ys x:xs
-  else
-    if item y == x then
-      rekusion2 ys xs
-    else
-      rekursion2 y:ys xs
-  where 
-    rekursion y ys x:xs =
-
-        singleWildcardMatch ++ longerWildcardMatch
-      -}
-
-
+match pattern@(Pattern (p:ps)) list@(x:xs) 
+      | p == Wildcard = orElse (singleWildcardMatch pattern list) (longerWildcardMatch pattern list)
+      | p == Item x = match (Pattern ps) xs -- kör match efter tagit bort nästa element
+      | otherwise = Nothing -- de två tidigare, om listorna inte är samma
 
 -- Helper function to match
 singleWildcardMatch, longerWildcardMatch :: Eq a => Pattern a -> [a] -> Maybe [a]
+singleWildcardMatch (Pattern (Wildcard:ps)) (x:xs) = mmap (const [x]) (match (Pattern ps) xs)
+longerWildcardMatch _ [] = Nothing
+longerWildcardMatch pattern@(Pattern (Wildcard:ps)) (x:xs) = mmap (x:) (match pattern xs)
+
+{- TO BE WRITTEN -}
+{- OVAN ÄR EKVIVALENT MED TIDIGARE SKRIVNA NEDAN:
+
 singleWildcardMatch (Pattern (Wildcard:ps)) (x:xs) =
   case match (Pattern ps) xs of
     Nothing -> Nothing
     Just _ -> Just [x]
 
+longerWildcardMatch (Pattern (Wildcard:ps)) xs = 
+    case xs of 
+        [] -> Nothing 
+        (x:xs') -> case match (Pattern (Wildcard:ps)) xs' of
+                    Nothing -> Nothing
+                    Just list -> Just(x:list)
+-}
 
-{- TO BE WRITTEN -}
-longerWildcardMatch (Pattern (Wildcard:ps)) xs = undefined
+
 
 
 
@@ -227,14 +248,29 @@ longerWildcardMatch (Pattern (Wildcard:ps)) xs = undefined
 
 -- Helper function: Matches a pattern and applies the transformation
 matchAndTransform :: Eq a => ([a] -> [a]) -> Pattern a -> [a] -> Maybe [a]
-matchAndTransform transform pat = (mmap transform) . (match pat)
+matchAndTransform transform pat = (mmap transform) . (match pat) -- f . g = f (g x). Alltså betyder detta mmap tranform (match pat xs)
 
 -- Applying a single pattern
 transformationApply :: Eq a => ([a] -> [a]) -> [a] -> (Pattern a, Template a) -> Maybe [a]
 {- TO BE WRITTEN -}
-transformationApply = undefined
+transformationApply transform xs (ps, ts)=  mmap (substitute ts) (matchAndTransform transform ps xs)
+
 
 -- Applying a list of patterns until one succeeds
 transformationsApply :: Eq a => ([a] -> [a]) -> [(Pattern a, Template a)] -> [a] -> Maybe [a]
 {- TO BE WRITTEN -}
-transformationsApply = undefined
+transformationsApply transform (pt: pts) xs = orElse success tryAgain
+  where
+    success = transformationApply transform xs pt
+    tryAgain = transformationsApply transform pts xs
+
+
+-- TESTER --
+
+frenchPresentation :: (Pattern Char, Template Char)
+frenchPresentation = (mkPattern '*' "My name is *", mkPattern '*' "Je m'appelle *")
+frenchPresentation1 = (mkPattern '+' "My name is *", mkPattern '+' "Kalle anka *")
+
+
+-- >>> transformationApply id "My name is Zacharias" frenchPresentation
+-- Just "Je m'appelle Zacharias"
