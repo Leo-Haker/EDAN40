@@ -66,18 +66,8 @@ medDetta1 = ["My", "name", "is", "Zacharias"]
 
 funkis =[funkarDetta2, funkarDetta1]
 
--- >>> Prelude.unwords $ rulesApply funkis medDetta1
--- /mnt/c/Users/haker/Desktop/EDAN40/1/src/Chatterbot.hs:78:25: error:
---     • Couldn't match type ‘Char’ with ‘[Char]’
---       Expected: Phrase
---         Actual: String
---     • In the expression:
---         unwords $ (fromMaybe [] (transformationsApply reflect pts phrase))
---       In an equation for ‘rulesApply’:
---           rulesApply pts phrase
---             = unwords
---                 $ (fromMaybe [] (transformationsApply reflect pts phrase))
--- (deferred type error)
+-- >>>  rulesApply funkis medDetta1
+-- ["Je","m'appelle","Zacharias"]
 
 rulesApply :: [(Pattern String, Template String)] -> Phrase -> Phrase
 {- TO BE WRITTEN 
@@ -85,7 +75,7 @@ rulesApply :: [(Pattern String, Template String)] -> Phrase -> Phrase
 2. Reflect the match.
 3. Substitute the match in the target pattern.
 -}
-rulesApply pts phrase = Prelude.unwords $ (Data.Meybe.fromMaybe [] (transformationsApply reflect pts phrase))
+rulesApply pts phrase = fromMaybe [] (transformationsApply reflect pts phrase)
 
 
 -- >>>reflect ["i", "will", "never", "see", "my","reflection", "in", "your", "eyes"] 
@@ -135,7 +125,7 @@ rulesCompile = map ruleCompile
 
 ruleCompile :: (String, [String]) -> Rule
 {- TO BE WRITTEN -}
-ruleCompile = undefined
+ruleCompile (p, ts) = Rule(starPattern $ map toLower p, map(starPattern . map toLower)ts) -- samma som map(\t starPattern $ map toLower t)ts)
 
 --------------------------------------
 
