@@ -259,6 +259,7 @@ transformationApply transform xs (ps, ts)=  mmap (substitute ts) (matchAndTransf
 -- Applying a list of patterns until one succeeds
 transformationsApply :: Eq a => ([a] -> [a]) -> [(Pattern a, Template a)] -> [a] -> Maybe [a]
 {- TO BE WRITTEN -}
+transformationsApply _ [] _ = Nothing
 transformationsApply transform (pt: pts) xs = orElse success tryAgain
   where
     success = transformationApply transform xs pt
@@ -270,7 +271,21 @@ transformationsApply transform (pt: pts) xs = orElse success tryAgain
 frenchPresentation :: (Pattern Char, Template Char)
 frenchPresentation = (mkPattern '*' "My name is *", mkPattern '*' "Je m'appelle *")
 frenchPresentation1 = (mkPattern '+' "My name is *", mkPattern '+' "Kalle anka *")
+frenchPresentation2 = (mkPattern '*' "My name is +", mkPattern '*' "fel fel +")
+frenchPresentation3 = (mkPattern '+' "My name is +", mkPattern '+' "Jag heter +")
 
+test1 = [frenchPresentation1, frenchPresentation2]
+
+test2 :: [(Pattern Char, Pattern Char)]
+test2 = [frenchPresentation1, frenchPresentation2, frenchPresentation]
+test3 = [frenchPresentation1, frenchPresentation2, frenchPresentation3]
 
 -- >>> transformationApply id "My name is Zacharias" frenchPresentation
 -- Just "Je m'appelle Zacharias"
+
+-- >>> transformationsApply id test1 "My name is Zacharias"
+-- >>> transformationsApply id test2 "My name is Zacharias"
+-- >>> transformationsApply id test3 "My name is Zacharias"
+-- Nothing
+-- Just "Je m'appelle Zacharias"
+-- Just "Jag heter Zacharias"
