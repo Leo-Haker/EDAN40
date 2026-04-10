@@ -60,9 +60,32 @@ makePair :: Rule -> IO (Pattern String, Template String)
 {- TO BE WRITTEN -}
 makePair = undefined
 
+funkarDetta1 = (mkPattern "*" (Prelude.words"My name is *"), mkPattern "*" (Prelude.words "Je m'appelle *"))
+funkarDetta2 = (mkPattern "+" (Prelude.words"My name a *"), mkPattern "+" (Prelude.words "Je m'buuu *"))
+medDetta1 = ["My", "name", "is", "Zacharias"]
+
+funkis =[funkarDetta2, funkarDetta1]
+
+-- >>> Prelude.unwords $ rulesApply funkis medDetta1
+-- /mnt/c/Users/haker/Desktop/EDAN40/1/src/Chatterbot.hs:78:25: error:
+--     • Couldn't match type ‘Char’ with ‘[Char]’
+--       Expected: Phrase
+--         Actual: String
+--     • In the expression:
+--         unwords $ (fromMaybe [] (transformationsApply reflect pts phrase))
+--       In an equation for ‘rulesApply’:
+--           rulesApply pts phrase
+--             = unwords
+--                 $ (fromMaybe [] (transformationsApply reflect pts phrase))
+-- (deferred type error)
+
 rulesApply :: [(Pattern String, Template String)] -> Phrase -> Phrase
-{- TO BE WRITTEN -}
-rulesApply = undefined
+{- TO BE WRITTEN 
+1. Match the phrase with a pattern.
+2. Reflect the match.
+3. Substitute the match in the target pattern.
+-}
+rulesApply pts phrase = Prelude.unwords $ (Data.Meybe.fromMaybe [] (transformationsApply reflect pts phrase))
 
 
 -- >>>reflect ["i", "will", "never", "see", "my","reflection", "in", "your", "eyes"] 
@@ -282,6 +305,10 @@ frenchPresentation1 = (mkPattern '+' "My name is *", mkPattern '+' "Kalle anka *
 frenchPresentation2 = (mkPattern '*' "My name is +", mkPattern '*' "fel fel +")
 frenchPresentation3 = (mkPattern '+' "My name is +", mkPattern '+' "Jag heter +")
 
+funkarDetta = (mkPattern "*" (Prelude.words"My name is *"), mkPattern "*" (Prelude.words "Je m'appelle *"))
+ab =  (mkPattern '*' "My name is *", mkPattern '*' "Je m'appelle *")
+medDetta = ["My", "name", "is", "Zacharias"]
+
 test1 = [frenchPresentation1, frenchPresentation2]
 
 test2 :: [(Pattern Char, Pattern Char)]
@@ -290,6 +317,15 @@ test3 = [frenchPresentation1, frenchPresentation2, frenchPresentation3]
 
 -- >>> transformationApply id "My name is Zacharias" frenchPresentation
 -- Just "Je m'appelle Zacharias"
+-- >>>  Prelude.unwords $ Data.fromMaybe [] (transformationApply id medDetta funkarDetta)
+-- "Je m'appelle Zacharias"
+
+-- >>> ab
+-- >>> funkarDetta
+-- (Pattern [Item 'M',Item 'y',Item ' ',Item 'n',Item 'a',Item 'm',Item 'e',Item ' ',Item 'i',Item 's',Item ' ',Wildcard],Pattern [Item 'J',Item 'e',Item ' ',Item 'm',Item '\'',Item 'a',Item 'p',Item 'p',Item 'e',Item 'l',Item 'l',Item 'e',Item ' ',Wildcard])
+-- (Pattern [Item "My name is *"],Pattern [Item "Je m'appelle *"])
+
+
 
 -- >>> transformationsApply id test1 "My name is Zacharias"
 -- >>> transformationsApply id test2 "My name is Zacharias"
