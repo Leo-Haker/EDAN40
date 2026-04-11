@@ -58,7 +58,12 @@ stateOfMind b =
 -- at random, and that's our bot
 makePair :: Rule -> IO (Pattern String, Template String)
 {- TO BE WRITTEN -}
-makePair = undefined
+makePair (Rule rule) = do 
+    random <- randomIO :: IO Float
+    let templates = snd rule 
+        pattern = fst rule
+        template = pick random templates
+    return (pattern, template)
 
 funkarDetta1 = (mkPattern "*" (Prelude.words"My name is *"), mkPattern "*" (Prelude.words "Je m'appelle *"))
 funkarDetta2 = (mkPattern "+" (Prelude.words"My name a *"), mkPattern "+" (Prelude.words "Je m'buuu *"))
@@ -70,12 +75,9 @@ funkis =[funkarDetta2, funkarDetta1]
 -- ["Je","m'appelle","Zacharias"]
 
 rulesApply :: [(Pattern String, Template String)] -> Phrase -> Phrase
-{- TO BE WRITTEN 
-1. Match the phrase with a pattern.
-2. Reflect the match.
-3. Substitute the match in the target pattern.
--}
+{- TO BE WRITTEN -}
 rulesApply pts phrase = fromMaybe [] (transformationsApply reflect pts phrase)
+
 
 
 -- >>>reflect ["i", "will", "never", "see", "my","reflection", "in", "your", "eyes"] 
