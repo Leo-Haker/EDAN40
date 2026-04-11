@@ -167,9 +167,16 @@ reductions = (map . map2) (starPattern, starPattern)
 reduce :: Phrase -> Phrase
 reduce = reductionsApply reductions
 
+-- TEST -- 
+-- >>> prepare "can you please tell me what Haskell is"
+-- ["please","tell","you","what","haskell","is"]
+
+-- Facit --
+-- Bör vara: what is Haskell?
+
 reductionsApply :: [(Pattern String, Pattern String)] -> Phrase -> Phrase
 {- TO BE WRITTEN -}
-reductionsApply = undefined
+reductionsApply pts phrase = undefined 
 
 
 -------------------------------------------------------
