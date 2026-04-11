@@ -65,11 +65,11 @@ makePair (Rule rule) = do
         template = pick random templates
     return (pattern, template)
 
-funkarDetta1 = (mkPattern "*" (Prelude.words"My name is *"), mkPattern "*" (Prelude.words "Je m'appelle *"))
-funkarDetta2 = (mkPattern "+" (Prelude.words"My name a *"), mkPattern "+" (Prelude.words "Je m'buuu *"))
-medDetta1 = ["My", "name", "is", "Zacharias"]
+-- funkarDetta1 = (mkPattern "*" (Prelude.words"My name is *"), mkPattern "*" (Prelude.words "Je m'appelle *"))
+-- funkarDetta2 = (mkPattern "+" (Prelude.words"My name a *"), mkPattern "+" (Prelude.words "Je m'buuu *"))
+-- medDetta1 = ["My", "name", "is", "Zacharias"]
 
-funkis =[funkarDetta2, funkarDetta1]
+-- funkis =[funkarDetta2, funkarDetta1]
 
 -- >>>  rulesApply funkis medDetta1
 -- ["Je","m'appelle","Zacharias"]
@@ -127,7 +127,7 @@ rulesCompile = map ruleCompile
 
 ruleCompile :: (String, [String]) -> Rule
 {- TO BE WRITTEN -}
-ruleCompile (p, ts) = Rule(starPattern $ map toLower p, map(starPattern . map toLower)ts) -- samma som map(\t starPattern $ map toLower t)ts)
+ruleCompile (p, ts) = Rule(starPattern $ map toLower p, map starPattern ts) -- samma som map(\t starPattern $ map toLower t)ts)
 
 --------------------------------------
 
@@ -301,7 +301,7 @@ transformationsApply transform (pt: pts) xs = orElse success tryAgain
 
 
 -- TESTER --
-
+{-}
 frenchPresentation :: (Pattern Char, Template Char)
 frenchPresentation = (mkPattern '*' "My name is *", mkPattern '*' "Je m'appelle *")
 frenchPresentation1 = (mkPattern '+' "My name is *", mkPattern '+' "Kalle anka *")
@@ -336,3 +336,5 @@ test3 = [frenchPresentation1, frenchPresentation2, frenchPresentation3]
 -- Nothing
 -- Just "Je m'appelle Zacharias"
 -- Just "Jag heter Zacharias"
+
+-}
