@@ -168,15 +168,19 @@ reduce :: Phrase -> Phrase
 reduce = reductionsApply reductions
 
 -- TEST -- 
--- >>> prepare "can you please tell me what Haskell is"
--- ["please","tell","you","what","haskell","is"]
+
+-- >>> prepare "can you please tell me what Haskell is" 
+-- ["what","is","haskell"]
 
 -- Facit --
 -- Bör vara: what is Haskell?
 
 reductionsApply :: [(Pattern String, Pattern String)] -> Phrase -> Phrase
 {- TO BE WRITTEN -}
-reductionsApply pts phrase = undefined 
+reductionsApply pts = fix f
+    where 
+        f :: Phrase -> Phrase 
+        f p = fromMaybe p (transformationsApply reflect pts p)
 
 
 -------------------------------------------------------
