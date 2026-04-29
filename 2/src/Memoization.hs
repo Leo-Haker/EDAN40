@@ -72,12 +72,16 @@ listLookup cache value = fromJust(lookup value cache)
 -- We use a 'fast fibonacci function' even if we haven't defined it yet!
 fibCache :: [(Int, Int)]
 {- TO BE WRITTEN -}
-fibCache = undefined
+fibCache = listCache [0..] fastFibo2
 
 -- And the fast function looks in the cache!
 fastFibo2 :: Int -> Int
 {- TO BE WRITTEN -}
-fastFibo2 n = undefined
+fastFibo2 0 = 0
+fastFibo2 1 = 1
+fastFibo2 n =   
+        let fib = listLookup fibCache
+        in fib(n-1) + fib(n-2)
 
 -- Pause:
 -- We make the solution in two parts:
