@@ -3,13 +3,15 @@ module Memoization where
 -- This is an assignment where we try to memoize functions
 -- To speed up computations.
 
-import Data.Maybe (fromJust)
+import Data.Maybe (fromJust, listToMaybe)
 
 -- The problem
 -- If we write a recursive function, it may be slow
 fibo :: Int -> Int
 {- TO BE WRITTEN -}
-fibo = undefined
+fibo 0 = 0
+fibo 1 = 1
+fibo n = fibo(n-1) + fibo(n-2)
 
 -- In GHCI, do,
 -- > :set +s
@@ -57,14 +59,14 @@ runFast = fastFibo1 30
 -- We pass the function and the domain of the keys as an argument
 listCache :: [a] -> (a -> b) -> [(a, b)]
 {- TO BE WRITTEN -}
-listCache domain f = undefined
+listCache domain f = [(a,b) | a <- domain, let b = f a]
 
 -- We create a function which looks up the
 -- result in the cache
 -- and use fromJust to get an error if the cache misses.
 listLookup :: Eq a => [(a, b)] -> a -> b
 {- TO BE WRITTEN -}
-listLookup cache value = undefined
+listLookup cache value = fromJust(lookup value cache)
 
 -- Create the cache for all integers...
 -- We use a 'fast fibonacci function' even if we haven't defined it yet!
