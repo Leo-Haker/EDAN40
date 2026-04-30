@@ -4,6 +4,9 @@ module Memoization where
 -- To speed up computations.
 
 import Data.Maybe (fromJust, listToMaybe)
+import Data.Foldable (maximumBy)
+import Data.Ord (comparing)
+
 
 -- The problem
 -- If we write a recursive function, it may be slow
@@ -140,7 +143,15 @@ dropLast l = take (length l - 1) l
 
 -- Slow version
 lps :: String -> String
-lps s = undefined
+lps [] = []
+lps [x] = [x]
+lps s 
+    | head s == last s = 
+        let rest = lps $ dropLast $ tail s
+        in [(head s)] ++ rest ++ [(last s)] 
+    | otherwise =
+        let options = [lps (tail s), lps (dropLast s)]
+        in maximumBy (comparing length) options
 
 -- CACHES FOR LISTS OF THINGS
 
