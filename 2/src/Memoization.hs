@@ -119,7 +119,9 @@ testMemoize n =
 -- And it's easy to implement fibonacci again: (openFib fibo) does that.
 openFib :: (Int -> Int) -> Int -> Int
 {- TO BE WRITTEN -}
-openFib f n = undefined
+openFib _ 0 = 0
+openFib _ 1 = 1
+openFib f n =  f (n-1) + f (n-2)
 
 -- We use openFib to create a cached function, and make sure
 -- The recursive calls call the fast version!
