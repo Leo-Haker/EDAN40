@@ -188,6 +188,8 @@ trieLookup (Trie t child) (e:es) =
 
 -- Get a subset of a trie, with limited depth
 -- (Provided: Useful for debugging)
+-- >>> limitTrie 2 small
+-- Trie 0 [(-1,Trie (-1) []),(1,Trie 1 [(2,Trie 2 [])])]
 limitTrie :: Int -> Trie n e -> Trie n e
 limitTrie 0 (Trie v _) = Trie v []
 limitTrie n (Trie v edges) =
@@ -195,10 +197,11 @@ limitTrie n (Trie v edges) =
 
 -- Map a function over all values in the trie
 -- Edge labels stay the same.
+-- >>> mapTrie (+1) small
+-- Trie 1 [(-1,Trie 0 []),(1,Trie 2 [(2,Trie 3 [])])]
 mapTrie :: (a -> b) -> Trie a e -> Trie b e
 {- TO BE WRITTEN -}
-mapTrie f (Trie v cs) = undefined
-
+mapTrie f (Trie v cs) = Trie (f v) [(edge, mapTrie f t) | (edge, t) <- cs]
 -- To build an infinite trie, we start from the root
 -- The root starts with the empty list...
 -- And from that, we have a number of edges
