@@ -230,8 +230,10 @@ edges domain currentNode = [(label, subtrees) |
 -- (using the edges function)
 subtree :: [a] -> a -> [a] -> Trie [a] a
 {- TO BE WRITTEN -}
-subtree domain label parent =
-  undefined
+subtree domain label parent = 
+                let currentNode = (parent ++ [label])
+                in Trie currentNode (edges domain currentNode)
+
 
 -- Important: the trie is infinite because edges calls subtree, and subtree calls edges.
 
