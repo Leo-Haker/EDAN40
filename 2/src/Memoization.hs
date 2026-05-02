@@ -228,6 +228,7 @@ edges domain currentNode = [(label, subtrees) |
 -- and the parent node
 -- And each child creates more edges!
 -- (using the edges function)
+-- YES, den stämmer!!
 subtree :: [a] -> a -> [a] -> Trie [a] a
 {- TO BE WRITTEN -}
 subtree domain label parent = 
@@ -241,7 +242,7 @@ subtree domain label parent =
 -- provided with a domain (for the list elements)
 trieCache :: [e] -> ([e] -> b) -> Trie b e
 {- TO BE WRITTEN -}
-trieCache domain function = undefined
+trieCache domain function = mapTrie function (rootTrie domain)
 
 {--
 You can inspect the cache with GHCI!
