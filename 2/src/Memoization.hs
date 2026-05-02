@@ -208,7 +208,7 @@ mapTrie f (Trie v cs) = Trie (f v) [(edge, mapTrie f t) | (edge, t) <- cs]
 -- The domain 'dom' defines how many edges we have per node
 rootTrie :: [a] -> Trie [a] a
 {- TO BE WRITTEN -}
-rootTrie domain = undefined
+rootTrie domain = Trie [] (edges domain [])
 
 -- How do we create the edges?
 -- We look at the domain,
