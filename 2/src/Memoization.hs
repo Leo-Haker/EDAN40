@@ -7,7 +7,6 @@ import Data.Maybe (fromJust, listToMaybe)
 import Data.Foldable (maximumBy)
 import Data.Ord (comparing)
 
-
 -- The problem
 -- If we write a recursive function, it may be slow
 fibo :: Int -> Int
@@ -166,10 +165,26 @@ lps s
 data Trie node edge = Trie node [(edge, Trie node edge)]
   deriving Show
 
--- First, looking for a list in a trie...
+verySmall = Trie 0 []
+small = Trie 0 [((-1), Trie (-1) []), (1, Trie 1 [(2, Trie 2 [])])]
+-- >>> trieLookup verySmall [0]
+-- >>> trieLookup small []
+-- >>> trieLookup small [0]
+-- >>> trieLookup small [1]
+-- >>> trieLookup small [1,2]
+-- 0
+-- 0
+-- 0
+-- 1
+-- 2
 trieLookup :: Eq e => Trie a e -> [e] -> a
 {- TO BE WRITTEN -}
-trieLookup t l = undefined
+trieLookup (Trie t _) [] = t 
+trieLookup (Trie t child) (e:es) = 
+            case lookup e child of
+                Just subtree -> trieLookup subtree es 
+                Nothing -> t
+
 
 -- Get a subset of a trie, with limited depth
 -- (Provided: Useful for debugging)
