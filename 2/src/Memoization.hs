@@ -219,7 +219,9 @@ rootTrie domain = Trie [] (edges domain [])
 -- and the current node
 edges :: [a] -> [a] -> [(a, Trie [a] a)]
 {- TO BE WRITTEN -}
-edges domain currentNode = undefined
+edges domain currentNode = [(label, subtrees) | 
+        label <- domain, 
+        let subtrees = subtree domain label currentNode]
 
 -- How do we build the subtree?
 -- We use the label we just followed
