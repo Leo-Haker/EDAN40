@@ -1,3 +1,5 @@
+-- Kalle Skog, Leo Haker
+
 module Memoization where
 
 -- This is an assignment where we try to memoize functions
@@ -165,18 +167,7 @@ lps s
 data Trie node edge = Trie node [(edge, Trie node edge)]
   deriving Show
 
-verySmall = Trie 0 []
-small = Trie 0 [((-1), Trie (-1) []), (1, Trie 1 [(2, Trie 2 [])])]
--- >>> trieLookup verySmall [0]
--- >>> trieLookup small []
--- >>> trieLookup small [0]
--- >>> trieLookup small [1]
--- >>> trieLookup small [1,2]
--- 0
--- 0
--- 0
--- 1
--- 2
+
 trieLookup :: Eq e => Trie a e -> [e] -> a
 {- TO BE WRITTEN -}
 trieLookup (Trie t _) [] = t 
@@ -188,8 +179,7 @@ trieLookup (Trie t child) (e:es) =
 
 -- Get a subset of a trie, with limited depth
 -- (Provided: Useful for debugging)
--- >>> limitTrie 2 small
--- Trie 0 [(-1,Trie (-1) []),(1,Trie 1 [(2,Trie 2 [])])]
+
 limitTrie :: Int -> Trie n e -> Trie n e
 limitTrie 0 (Trie v _) = Trie v []
 limitTrie n (Trie v edges) =
@@ -197,15 +187,17 @@ limitTrie n (Trie v edges) =
 
 -- Map a function over all values in the trie
 -- Edge labels stay the same.
--- >>> mapTrie (+1) small
--- Trie 1 [(-1,Trie 0 []),(1,Trie 2 [(2,Trie 3 [])])]
+
 mapTrie :: (a -> b) -> Trie a e -> Trie b e
 {- TO BE WRITTEN -}
-mapTrie f (Trie v cs) = Trie (f v) [(edge, mapTrie f t) | (edge, t) <- cs]
+mapTrie f (Trie v ts) = Trie (f v) [(edge, mapTrie f t) | (edge, t) <- ts]
 -- To build an infinite trie, we start from the root
 -- The root starts with the empty list...
 -- And from that, we have a number of edges
 -- The domain 'dom' defines how many edges we have per node
+
+
+
 rootTrie :: [a] -> Trie [a] a
 {- TO BE WRITTEN -}
 rootTrie domain = Trie [] (edges domain [])
@@ -228,7 +220,6 @@ edges domain currentNode = [(label, subtrees) |
 -- and the parent node
 -- And each child creates more edges!
 -- (using the edges function)
--- YES, den stämmer!!
 subtree :: [a] -> a -> [a] -> Trie [a] a
 {- TO BE WRITTEN -}
 subtree domain label parent = 
@@ -287,15 +278,13 @@ l2 = "functionalprogrammingrules"
 s1 = "bananrepubliksinvasionsarmestabsadjutant"
 s2 = "kontrabasfiolfodralmakarmästarlärling"
 
--- >>> fastLPS s1
--- "uniarorainu"
 
 openLPS :: (String -> String) -> (String -> String)
 openLPS _ [] = []
 openLPS _ [x] = [x]
 openLPS f s 
     | head s == last s =
-        let rest = fastLPS $ dropLast $ tail s
+        let rest = f $ dropLast $ tail s
         in [head s] ++ rest ++ [last s]
     | otherwise = 
         maximumBy (comparing length) [f $ tail s, f $ dropLast s]
@@ -304,10 +293,6 @@ openLPS f s
 -- Fast!
 fastLPS :: String -> String
 fastLPS s = trieLookup (trieCache s (openLPS fastLPS)) s
-
-
--- trieCache :: [e] -> ([e] -> b) -> Trie b e
--- trieLookup :: Eq e => Trie a e -> [e] -> a
 
 -- So, what were the tricks?
 -- The first one is to build an infinite data-structure, to memoize the function
