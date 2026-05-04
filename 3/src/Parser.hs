@@ -36,7 +36,7 @@ spaces :: Parser String
 -- spaces =  error "spaces not implemented"
 spaces =
     -- Reads one whitespace character as a space and return something like [' ']
-    let oneSpace = char ? (`elem` [' ', '\t', '\n']) >-> (:[])
+    let oneSpace = char ? isSpace >-> (:[])
     -- Reads many whitespace characters and concatenates them
     in iter (comment ! oneSpace) >-> concat
 
@@ -56,8 +56,10 @@ comment = dash -# dash -# notNewLine #- newline
 token :: Parser a -> Parser a
 token m = m #- spaces
 
+-- >>> letter "Hejsan" 
+-- Just ('H',"jsan")
 letter :: Parser Char
-letter =  error "letter not implemented"
+letter = char ? isAlpha
 
 word :: Parser String
 word = token (letter # iter letter >-> cons)
