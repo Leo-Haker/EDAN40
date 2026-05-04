@@ -20,36 +20,24 @@ cons(a, b) = a:b
 
 -- Runs both parsers but only keep the result of second one
 (-#) :: Parser a -> Parser b -> Parser b
-(m -# n) cs =
-    case m cs of
-    Nothing -> Nothing
-    Just(a, cs') ->
-        case n cs' of
-        Nothing -> Nothing
-        Just(b, cs'') -> Just(b, cs'')
+(-#) m n = (m # n) >-> snd
 
 -- Runs both parsers but only keeps the result of the first
 (#-) :: Parser a -> Parser b -> Parser a
-(m #- n) cs =
-    case m cs of
-    Nothing -> Nothing
-    Just(a, cs') ->
-        case n cs' of
-        Nothing -> Nothing
-        Just(b, cs'') -> Just(a, cs'')
+(#-) m n = (m # n) >-> fst
 
 -- Treat comments as whitespace
 -- >>> spaces "\t\t--comment\n"
 -- Just ("\t\tcomment","")
 -- >>> spaces "-- comment\n"
--- Just ("comment","")
+-- Just (" comment","")
 -- >>> spaces "not space!"
 -- Just ("","not space!")
 spaces :: Parser String
 -- spaces =  error "spaces not implemented"
 spaces =
     -- Reads one whitespace character as a space and return something like [' ']
-    let oneSpace = char ? isSpace >-> (:[])
+     let oneSpace = char ? isSpace >-> (:[])  
     -- Reads many whitespace characters and concatenates them
     in iter (comment ! oneSpace) >-> concat
 
@@ -58,7 +46,6 @@ spaces =
 -- Just ("hello!","")
 -- >>> comment "--Not a comment"
 -- Nothing
--- We include this because otherwise, it's quite tricky to support
 comment :: Parser String
 comment = dash -# dash -# notNewLine #- newline
     where notNewLine = iter (char ? (/= '\n'))
@@ -79,7 +66,9 @@ word = token (letter # iter letter >-> cons)
 
 
 
+-- >>> accept "hejsan" "hejsan"
 -- >>> chars 3 "hejsan"
+-- Just ("hejsan","")
 -- Just ("hej","san")
 
 chars :: Int -> Parser String
