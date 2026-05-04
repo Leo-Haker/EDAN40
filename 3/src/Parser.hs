@@ -56,16 +56,24 @@ comment = dash -# dash -# notNewLine #- newline
 token :: Parser a -> Parser a
 token m = m #- spaces
 
--- >>> letter "Hejsan" 
--- Just ('H',"jsan")
+
 letter :: Parser Char
 letter = char ? isAlpha
 
 word :: Parser String
 word = token (letter # iter letter >-> cons)
 
+
+
+
+-- >>> chars 100 "hejsan"
+-- Nothing
+
 chars :: Int -> Parser String
-chars n =  error "chars not implemented"
+chars 0 = return ""
+chars n = char #> \x -> chars(n-1) #> \xs -> return (x:xs)
+
+-- (==c) is equivalent to the predicate (\x -> x==c)
 
 accept :: String -> Parser String
 accept w = (token (chars (length w))) ? (==w)
