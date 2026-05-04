@@ -20,11 +20,23 @@ cons(a, b) = a:b
 
 -- Runs both parsers but only keep the result of second one
 (-#) :: Parser a -> Parser b -> Parser b
-m -# n = error "-# not implemented"
+(m -# n) cs =
+    case m cs of
+    Nothing -> Nothing
+    Just(a, cs') ->
+        case n cs' of
+        Nothing -> Nothing
+        Just(b, cs'') -> Just(b, cs'')
 
 -- Runs both parsers but only keeps the result of the first
 (#-) :: Parser a -> Parser b -> Parser a
-m #- n = error "#- not implemented"
+(m #- n) cs =
+    case m cs of
+    Nothing -> Nothing
+    Just(a, cs') ->
+        case n cs' of
+        Nothing -> Nothing
+        Just(b, cs'') -> Just(a, cs'')
 
 -- Treat comments as whitespace
 -- >>> spaces "\t\t--comment\n"
