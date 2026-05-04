@@ -5,6 +5,7 @@ module Parser(module CoreParser, T, digit, digitVal, chars, letter, err,
 import Prelude hiding (return, fail)
 import Data.Char
 import CoreParser
+import Control.Monad (MonadFail(fail))
 infixl 7 -#, #-
 
 type T a = Parser a
@@ -77,7 +78,7 @@ accept :: String -> Parser String
 accept w = (token (chars (length w))) ? (==w)
 
 require :: String -> Parser String
-require w  = error "require not implemented"
+require w  = accept w ! err w
 
 lit :: Char -> Parser Char
 lit c = token char ? (==c)
