@@ -8,7 +8,7 @@ type T = Statement
 data Statement =
     Assignment String Expr.T |
     If Expr.T Statement Statement |
-    Begin Statement |
+    Begin [Statement] |
     While Expr.T Statement|
     Read Expr.T |
     Write Expr.T |
