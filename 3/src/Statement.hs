@@ -7,7 +7,12 @@ import qualified Expr
 type T = Statement
 data Statement =
     Assignment String Expr.T |
-    If Expr.T Statement Statement
+    If Expr.T Statement Statement |
+    Begin Statement |
+    While Expr.T Statement|
+    Read Expr.T |
+    Write Expr.T |
+    Skip 
     deriving Show
 
 assignment = word #- accept ":=" # Expr.parse #- require ";" >-> uncurry Assignment
