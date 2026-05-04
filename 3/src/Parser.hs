@@ -66,14 +66,12 @@ word = token (letter # iter letter >-> cons)
 
 
 
--- >>> chars 100 "hejsan"
--- Nothing
+-- >>> chars 3 "hejsan"
+-- Just ("hej","san")
 
 chars :: Int -> Parser String
 chars 0 = return ""
 chars n = char #> \x -> chars(n-1) #> \xs -> return (x:xs)
-
--- (==c) is equivalent to the predicate (\x -> x==c)
 
 accept :: String -> Parser String
 accept w = (token (chars (length w))) ? (==w)
