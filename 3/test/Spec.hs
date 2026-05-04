@@ -6,4 +6,8 @@ import qualified TestStatement
 import qualified TestProgram
 
 main :: IO ()
-main = runTestTTAndExit $ TestList [TestParser.tests, TestExpr.tests, TestStatement.tests, TestProgram.tests]
+main = runTestTTAndExit $ TestList [
+    TestLabel "Parser" TestParser.tests,
+    TestLabel "Expressions" TestExpr.tests,
+    TestLabel "Statements" TestStatement.tests,
+    TestLabel "Programs" TestProgram.tests]

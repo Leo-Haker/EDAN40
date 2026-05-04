@@ -50,6 +50,7 @@ fail cs = Nothing
         Nothing -> Nothing
         Just(b, cs'') -> Just((a, b), cs'')
 
+-- Signature looks like "flip fmap"...
 (>->) :: Parser a -> (a -> b) -> Parser b
 (m >-> b) cs =
     case m cs of

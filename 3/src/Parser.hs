@@ -1,62 +1,84 @@
 module Parser(module CoreParser, T, digit, digitVal, chars, letter, err,
-              lit, number, iter, accept, require, token,
+              lit, number, iter, accept, require, token, newline, comment,
               spaces, word, (-#), (#-)) where
+
 import Prelude hiding (return, fail)
 import Data.Char
 import CoreParser
-infixl 7 -#, #- 
+infixl 7 -#, #-
 
 type T a = Parser a
 
 err :: String -> Parser a
 err message cs = error (message++" near "++cs++"\n")
 
-iter :: Parser a -> Parser [a]  
-iter m = m # iter m >-> cons ! return [] 
+iter :: Parser a -> Parser [a]
+iter m = m # iter m >-> cons ! return []
 
 cons(a, b) = a:b
 
+-- Runs both parsers but only keep the result of second one
 (-#) :: Parser a -> Parser b -> Parser b
--- m -# n = error "-# not implemented"
-m -# n = m #> const n
+m -# n = error "-# not implemented"
 
+-- Runs both parsers but only keeps the result of the first
 (#-) :: Parser a -> Parser b -> Parser a
--- m #- n = error "#- not implemented"
-m #- n = m #> \x -> n #> \_ -> return x
+m #- n = error "#- not implemented"
 
+-- Treat comments as whitespace
+-- >>> spaces "\t\t--comment\n"
+-- Just ("\t\tcomment","")
+-- >>> spaces "-- comment\n"
+-- Just ("comment","")
+-- >>> spaces "not space!"
+-- Just ("","not space!")
 spaces :: Parser String
 -- spaces =  error "spaces not implemented"
-spaces = 
-    let oneSpace = char ? (`elem` [' ', '\t'])
-    in iter oneSpace
+spaces =
+    -- Reads one whitespace character as a space and return something like [' ']
+    let oneSpace = char ? (`elem` [' ', '\t', '\n']) >-> (:[])
+    -- Reads many whitespace characters and concatenates them
+    in iter (comment ! oneSpace) >-> concat
+
+-- Treat comments as whitespace
+-- >>> comment "--hello!\n"
+-- Just ("hello!","")
+-- >>> comment "--Not a comment"
+-- Nothing
+-- We include this because otherwise, it's quite tricky to support
+comment :: Parser String
+comment = dash -# dash -# notNewLine #- newline
+    where notNewLine = iter (char ? (/= '\n'))
+          dash = char ? (== '-')
+
+
 
 token :: Parser a -> Parser a
 token m = m #- spaces
 
 letter :: Parser Char
--- letter =  error "letter not implemented"
-letter = char ? isAlpha
+letter =  error "letter not implemented"
 
 word :: Parser String
 word = token (letter # iter letter >-> cons)
 
 chars :: Int -> Parser String
--- chars n =  error "chars not implemented"
-chars 0 = return []
-chars n = char # chars (n-1) >-> cons
+chars n =  error "chars not implemented"
 
 accept :: String -> Parser String
 accept w = (token (chars (length w))) ? (==w)
 
 require :: String -> Parser String
--- require w  = error "require not implemented"
-require w = token (chars (length w)) ? (==w) ! fail
+require w  = error "require not implemented"
 
 lit :: Char -> Parser Char
 lit c = token char ? (==c)
 
-digit :: Parser Char 
-digit = char ? isDigit 
+newline :: Parser Char
+newline = char ? (== '\n')
+
+digit :: Parser Char
+digit = char ? isDigit
 
 digitVal :: Parser Integer
 digitVal = digit >-> digitToInt >-> fromIntegral

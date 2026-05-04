@@ -287,7 +287,8 @@ l2 = "functionalprogrammingrules"
 s1 = "bananrepubliksinvasionsarmestabsadjutant"
 s2 = "kontrabasfiolfodralmakarmästarlärling"
 
--- >>> fastLPS k1
+-- >>> fastLPS s1
+-- "uniarorainu"
 
 openLPS :: (String -> String) -> (String -> String)
 openLPS _ [] = []

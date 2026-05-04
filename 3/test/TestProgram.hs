@@ -4,13 +4,12 @@ module TestProgram (tests) where
 import Test.HUnit
 
 import Program
-import Test.HUnit
 
 p0, p1, p2 :: Program.T
 
 -- basic program, no comments
 
-s0 = ("\
+s0 = "\
 \read k;\
 \read n;\
 \m := 1;\
@@ -20,20 +19,20 @@ s0 = ("\
 \      skip;\
 \    else\
 \      write m;\
-\    m := m + 1;\
-\  end")
+\  m := m + 1;\
+\  end"
 
 p0 = fromString s0
 
 -- Printing and reading should yield the same results
 -- (Should not be sensitive to whitespace)
 testp0 :: Test
-testp0 = p0 ~=? fromString (toString p0)
+testp0 = TestLabel "p0" $ p0 ~=? fromString (toString p0)
 
 -- does execution work as expected?
 
 testExecp0 :: Test
-testExecp0 = Program.exec p0 [3, 16] ~?= [1..15]
+testExecp0 = TestLabel "p0" $ Program.exec p0 [3, 16] ~?= [3, 6, 9, 12, 15]
 
 -- this time some comments and exponents
 
@@ -55,10 +54,10 @@ s1 = "\
 p1 = fromString s1
 
 testp1 :: Test
-testp1 = fromString (toString p1) ~=? p1
+testp1 = TestLabel "p1" $ fromString (toString p1) ~=? p1
 
 testExecp1 :: Test
-testExecp1 = Program.exec p1 [4, 4] ~?= [7, 6, 0, 1, 1, 0, 2, 3, 0]
+testExecp1 = TestLabel "p1" $ Program.exec p1 [4, 4] ~?= [64, 16, 27, 8, 8, 4, 1, 2, 0]
 
 p2 = fromString ("\
 \begin\
@@ -77,8 +76,12 @@ p2 = fromString ("\
 \end")
 
 testp2 :: Test
-testp2 = fromString (toString p2) ~=? p2
+testp2 = TestLabel "p2" $ fromString (toString p2) ~=? p2
 
-testExecp2 = Program.exec p2 [5] ~?= [120]
+testExecp2 = TestLabel "p2" $ Program.exec p2 [5] ~?= [120]
 
-tests = TestList [testp0, testp1, testp2, testExecp0, testExecp1, testExecp2]
+testsPrinting = TestLabel "Printing" $ TestList [testp0, testp1, testp2]
+
+testsExecution = TestLabel "Execution" $ TestList [testExecp0, testExecp1, testExecp2]
+
+tests = TestList [testsPrinting, testsExecution]

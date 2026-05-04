@@ -22,11 +22,11 @@ parsed and interpreted in this assignment.
             skip;
         else
             -- note an exponentiation below
-            write m^2^3;
+            write m^2;
         m := m + 1; -- an inline comment
         end
-    read -- yet another comment, this time inside a statement!
-    var;
+    write - yet another comment, this time inside a statement!
+        m^2^3;
 
 The language has just one data type, integer, and variables are not
 declared. In the `while` and `if` statements a positive expression value
@@ -34,6 +34,7 @@ is interpreted as true while 0 and negative values mean false.
 
 The program above reads two integers, `k` and `n`, and writes squares of
 all integers between `1` and `n` that are multiples of `k`.
+Finally it should write the eighth power of `n`.
 
 The grammar for the language is given by
 
