@@ -17,7 +17,8 @@ data Statement =
     While Expr.T Statement|
     Read String |
     Write Expr.T|
-    Skip 
+    Skip |
+    Comment String
     deriving Show
 
 assignment = word #- accept ":=" # Expr.parse #- require ";" >-> uncurry Assignment
@@ -33,6 +34,8 @@ read' = accept "read" -# word #- require ";" >-> Read
 write = accept "write" -# Expr.parse #- require ";" >-> Write
 
 skip = accept "skip" #- require ";" >-> Skip
+
+comment = accept "--" -# many (item ? (/= '\n')) #- require "\n" >-> Comment
 
 many :: Parser a -> Parser [a]
 many p = some p ! return []
@@ -87,8 +90,9 @@ instance Executable Statement where
             Right v ->
                 v : execute stmts dict input
     execute (Skip : stmts) dict input = execute stmts dict input
+    execute (Comment ingenbryrsigkommentar: stmts) dict input = execute stmts dict input
 
 instance Parse Statement where
--- mucho importante att assignment är till höger då keywords spelar roll i ordningen pga require
-  parse = begin ! if' ! while ! read' ! write ! skip ! assignment 
+-- mucho importante att assignment är till höger då keywords spelar roll i ordningen pga require/accept
+  parse = begin ! if' ! while ! read' ! write ! skip ! comment ! assignment 
   toString = error "Statement.toString not implemented"
