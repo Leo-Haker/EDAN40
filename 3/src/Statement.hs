@@ -5,6 +5,9 @@ import qualified Dictionary
 import qualified Expr
 import Data.Tuple (uncurry)
 import CoreParser (Parse(parse))
+import Control.Monad.State (State)
+import qualified Text.Parsec as Statement
+import qualified CoreParser as Expr
 
 type T = Statement
 data Statement =
@@ -20,11 +23,17 @@ data Statement =
 assignment = word #- accept ":=" # Expr.parse #- require ";" >-> uncurry Assignment
 
 
-begin = accept "begin" -# [statement.parse] --not done
+begin = accept "begin" -# many parse #- require "end" >-> Begin
+if' = accept "if" -# Expr.parse #- require "then" # parse #- require "else" # parse >-> If
 read = accept "read" -# word #- require ";" >-> Read
 write = accept "write" -# Expr.parse #- require ";" >-> Write
 skip = accept "skip" #- require ";" >-> Skip
 
+many :: Parser a -> Parser [a]
+many p = some p ! return []
+
+some :: Parser a -> Parser [a]
+some p = p #> \x -> many p #> \xs -> return [x:xs]
 
 class Executable t where
     execute :: [t] -> Dictionary.T String Integer -> [Integer] -> [Integer]
