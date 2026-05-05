@@ -16,17 +16,22 @@ data Statement =
     Begin [Statement] |
     While Expr.T Statement|
     Read String |
-    Write Expr.T |
+    Write Expr.T|
     Skip 
     deriving Show
 
 assignment = word #- accept ":=" # Expr.parse #- require ";" >-> uncurry Assignment
-
+-- eftersom vi får (cond, (then, else)) o vill ha If cond then else
+if' = accept "if" -# Expr.parse #- require "then" # parse #- require "else" # parse >-> uncurry (uncurry . If)
 
 begin = accept "begin" -# many parse #- require "end" >-> Begin
-if' = accept "if" -# Expr.parse #- require "then" # parse #- require "else" # parse >-> If
+
+while = accept "while" -# Expr.parse #- require "do" # parse >-> uncurry While
+
 read = accept "read" -# word #- require ";" >-> Read
+
 write = accept "write" -# Expr.parse #- require ";" >-> Write
+
 skip = accept "skip" #- require ";" >-> Skip
 
 many :: Parser a -> Parser [a]
@@ -50,5 +55,6 @@ instance Executable Statement where
                     execute (elseStmts: stmts) dict input
 
 instance Parse Statement where
-  parse = error "Statement.parse not implemented"
+-- mucho importante att assignment är till höger då keywords spelar roll i ordningen pga require
+  parse = begin ! if' ! while ! read ! write ! skip ! assignment 
   toString = error "Statement.toString not implemented"
