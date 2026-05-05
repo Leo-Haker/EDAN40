@@ -41,7 +41,7 @@ many :: Parser a -> Parser [a]
 many p = some p ! return []
 
 some :: Parser a -> Parser [a]
-some p = p #> \x -> many p #> \xs -> return [x:xs]
+some p = p #> \x -> many p #> \xs -> return x:xs
 
 class Executable t where
     execute :: [t] -> Dictionary.T String Integer -> [Integer] -> [Integer]
