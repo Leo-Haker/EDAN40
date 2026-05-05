@@ -10,7 +10,7 @@ data Statement =
     If Expr.T Statement Statement |
     Begin [Statement] |
     While Expr.T Statement|
-    Read Expr.T |
+    Read String |
     Write Expr.T |
     Skip 
     deriving Show
