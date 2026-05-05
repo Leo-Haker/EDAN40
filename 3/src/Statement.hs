@@ -3,6 +3,8 @@ import Prelude hiding (return, fail)
 import Parser hiding (T)
 import qualified Dictionary
 import qualified Expr
+import Data.Tuple (uncurry)
+import CoreParser (Parse(parse))
 
 type T = Statement
 data Statement =
@@ -16,6 +18,13 @@ data Statement =
     deriving Show
 
 assignment = word #- accept ":=" # Expr.parse #- require ";" >-> uncurry Assignment
+
+
+begin = accept "begin" -# [statement.parse] --not done
+read = accept "read" -# word #- require ";" >-> Read
+write = accept "write" -# Expr.parse #- require ";" >-> Write
+skip = accept "skip" #- require ";" >-> Skip
+
 
 class Executable t where
     execute :: [t] -> Dictionary.T String Integer -> [Integer] -> [Integer]
