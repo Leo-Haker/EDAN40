@@ -41,7 +41,7 @@ skip :: Parser Statement
 skip = accept "skip" #- require ";" >-> Skip
 
 comment :: Parser Statement
-comment = accept "--" -# many (item ? (/= '\n')) #- require "\n" >-> Comment
+comment = Parser.comment >-> Comment
 
 many :: Parser a -> Parser [a]
 many p = some p ! return []
@@ -54,17 +54,17 @@ class Executable t where
 
 instance Executable Statement where
     -- execute :: [Statement] -> Dictionary.T String Integer -> [Integer] -> [Integer]
-    execute [] dict input = []
+    execute [] _ _ = []
     execute (Assignment str expr: stmts) dict input = 
         case Expr.value expr dict of
-            Left err -> error err
+            Left s -> error s
             Right v -> 
-                execute stmts (Dictionary.insert str v dict) input
+                execute stmts (Dictionary.insert (str, v) dict) input
             -- slänger in värdet på str platsen o sen kör vi vidare
 
     execute (If cond thenStmts elseStmts: stmts) dict input =
         case Expr.value cond dict of
-            Left err -> error err
+            Left s -> error s
             Right v ->
                 if v > 0 then
                     execute (thenStmts: stmts) dict input
@@ -76,7 +76,7 @@ instance Executable Statement where
 
     execute (While cond thenstmt:stmts) dict input = 
         case Expr.value cond dict of
-            Left err -> error err
+            Left s -> error s
             Right v -> 
                 if v > 0 then
                     -- här kör vi först then blocket sen kör vi hela while igen + resten
