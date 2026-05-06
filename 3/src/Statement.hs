@@ -99,19 +99,26 @@ instance Parse Statement where
 -- mucho importante att assignment är till höger då keywords spelar roll i ordningen pga require/accept
   parse = begin ! if' ! while ! read' ! write ! skip ! Statement.comment ! assignment 
 
-  toString (Assignment str expr) = str ++ " := " ++ (Expr.toString expr)
+  toString (Assignment str expr) = str ++ " := " ++ Expr.toString expr ++ ";"
   
-  toString (If cond thenstmt elsestmt) = "if" ++ (Expr.toString cond) ++ " then" ++ (toString thenstmt) ++ "else" ++ (toString elsestmt)
-
+  toString (If cond thenstmt elsestmt) = 
+    "if " ++ Expr.toString cond ++ " then\n" ++ 
+    "   " ++ toString thenstmt ++ "\n" ++ 
+    "else\n" ++ 
+    "   " ++ toString elsestmt
   
-  toString (Begin stmts)= "begin " ++ (unlines (map toString stmts)) ++ " end"
+  toString (Begin stmts)= 
+    "begin\n" ++ 
+     unlines (map(\s -> "   " ++ toString s)stmts) ++
+    "end"
   
-  toString (While cond stmt)= "while " ++ (Expr.toString cond) ++ " do " ++ (toString stmt) ++ ";"
+  toString (While cond stmt)= 
+    "while " ++ Expr.toString cond ++ " do " ++ toString stmt
   
   toString (Read str)= "read " ++ str ++ ";"
   
   toString (Write expr)= "write " ++ (Expr.toString expr) ++ ";"
   
-  toString (Skip) = "skip;"
+  toString Skip = "skip;"
 
   toString (Comment str) = "--" ++ str
