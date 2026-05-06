@@ -104,7 +104,7 @@ instance Parse Statement where
   toString (If cond thenstmt elsestmt) = "if" ++ (Expr.toString cond) ++ " then" ++ (toString thenstmt) ++ "else" ++ (toString elsestmt)
 
   
-  toString (Begin stmts)= "begin" ++ (unlines (map toString stmts))
+  toString (Begin stmts)= "begin " ++ (unlines (map toString stmts)) ++ " end"
   
   toString (While cond stmt)= "while " ++ (Expr.toString cond) ++ " do " ++ (toString stmt) ++ ";"
   

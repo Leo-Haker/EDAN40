@@ -14,7 +14,7 @@ instance Show T where
 
 instance Parse T where
   parse = Statement.many Statement.parse >-> \stmts -> Program stmts
-  toString = error "Program.toString not implemented"
+  toString (Program stmts)= unlines (map Statement.toString stmts)
 
 exec :: T -> [Integer] -> [Integer]
 exec (Program stmts) input = Statement.execute stmts Dictionary.empty input
