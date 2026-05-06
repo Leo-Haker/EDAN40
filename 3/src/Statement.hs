@@ -3,9 +3,6 @@ import Prelude hiding (return, fail)
 import Parser hiding (T)
 import qualified Dictionary
 import qualified Expr
-import Data.Tuple (uncurry)
-import CoreParser (Parse(parse))
-import qualified CoreParser as Expr
 
 type T = Statement
 data Statement =
@@ -101,4 +98,20 @@ instance Executable Statement where
 instance Parse Statement where
 -- mucho importante att assignment är till höger då keywords spelar roll i ordningen pga require/accept
   parse = begin ! if' ! while ! read' ! write ! skip ! Statement.comment ! assignment 
-  toString = error "Statement.toString not implemented"
+
+  toString (Assignment str expr) = str ++ (Expr.toString expr)
+  
+  toString (If cond thenstmt elsestmt) = "if" ++ (Expr.toString cond) ++ " then" ++ (toString thenstmt) ++ "else" ++ (toString elsestmt)
+
+  
+  toString (Begin stmts)= "begin" ++ (unlines (map toString stmts))
+  
+  toString (While cond stmt)= "while" ++ (Expr.toString cond) ++ (toString stmt)
+  
+  toString (Read str)= "read" ++ str
+  
+  toString (Write expr)= "write" ++ (toString expr)
+  
+  toString (Skip str) = "skip" ++ str
+  
+  toString (Comment str) = "--" ++ str

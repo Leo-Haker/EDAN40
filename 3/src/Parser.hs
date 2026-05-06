@@ -5,7 +5,6 @@ module Parser(module CoreParser, T, digit, digitVal, chars, letter, err,
 import Prelude hiding (return, fail)
 import Data.Char
 import CoreParser
-import Control.Monad (MonadFail(fail))
 infixl 7 -#, #-
 
 type T a = Parser a
@@ -16,6 +15,7 @@ err message cs = error (message++" near "++cs++"\n")
 iter :: Parser a -> Parser [a]
 iter m = m # iter m >-> cons ! return []
 
+cons :: (a, [a]) -> [a]
 cons(a, b) = a:b
 
 -- Runs both parsers but only keep the result of second one
