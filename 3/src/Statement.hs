@@ -21,7 +21,8 @@ data Statement =
 
 assignment = word #- accept ":=" # Expr.parse #- require ";" >-> uncurry Assignment
 -- eftersom vi får (cond, (then, else)) o vill ha If cond then else
-if' = accept "if" -# Expr.parse #- require "then" # parse #- require "else" # parse >-> uncurry (uncurry . If)
+if' :: Parser Statement
+if' = accept "if" -# Expr.parse #- require "then" # parse #- require "else" # parse >-> \((cond, thenB), elseB) -> If cond thenB elseB
 
 begin = accept "begin" -# many parse #- require "end" >-> Begin
 
