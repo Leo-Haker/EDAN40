@@ -1,13 +1,10 @@
-import Test.HUnit
+import qualified Program
 
-import qualified TestParser
-import qualified TestExpr
-import qualified TestStatement
-import qualified TestProgram
+src :: String
+src = "read k; read n; m := 1; while n-m do begin if m-m/k*k then skip; else write m^2; m := m+1; end write m^2^3;"
 
 main :: IO ()
-main = runTestTTAndExit $ TestList [
-    TestLabel "Parser" TestParser.tests,
-    TestLabel "Expressions" TestExpr.tests,
-    TestLabel "Statements" TestStatement.tests,
-    TestLabel "Programs" TestProgram.tests]
+main = do
+    let p = Program.fromString src
+    print $ Program.exec p [3, 16]
+    
