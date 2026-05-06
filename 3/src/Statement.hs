@@ -24,16 +24,22 @@ assignment = word #- accept ":=" # Expr.parse #- require ";" >-> uncurry Assignm
 if' :: Parser Statement
 if' = accept "if" -# Expr.parse #- require "then" # parse #- require "else" # parse >-> \((cond, thenB), elseB) -> If cond thenB elseB
 
+begin :: Parser Statement
 begin = accept "begin" -# many parse #- require "end" >-> Begin
 
+while :: Parser Statement
 while = accept "while" -# Expr.parse #- require "do" # parse >-> uncurry While
 
+read' :: Parser Statement
 read' = accept "read" -# word #- require ";" >-> Read
 
+write :: Parser Statement
 write = accept "write" -# Expr.parse #- require ";" >-> Write
 
+skip :: Parser b
 skip = accept "skip" #- require ";" >-> Skip
 
+comment :: Parser Statement
 comment = accept "--" -# many (item ? (/= '\n')) #- require "\n" >-> Comment
 
 many :: Parser a -> Parser [a]
