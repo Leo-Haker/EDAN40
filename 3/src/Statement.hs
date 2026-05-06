@@ -5,8 +5,6 @@ import qualified Dictionary
 import qualified Expr
 import Data.Tuple (uncurry)
 import CoreParser (Parse(parse))
-import Control.Monad.State (State)
-import qualified Text.Parsec as Statement
 import qualified CoreParser as Expr
 
 type T = Statement
