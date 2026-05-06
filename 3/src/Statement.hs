@@ -15,10 +15,11 @@ data Statement =
     While Expr.T Statement|
     Read String |
     Write Expr.T|
-    Skip |
+    Skip String |
     Comment String
     deriving Show
 
+assignment :: Parser Statement
 assignment = word #- accept ":=" # Expr.parse #- require ";" >-> uncurry Assignment
 -- eftersom vi får (cond, (then, else)) o vill ha If cond then else
 if' :: Parser Statement
@@ -36,7 +37,7 @@ read' = accept "read" -# word #- require ";" >-> Read
 write :: Parser Statement
 write = accept "write" -# Expr.parse #- require ";" >-> Write
 
-skip :: Parser b
+skip :: Parser Statement 
 skip = accept "skip" #- require ";" >-> Skip
 
 comment :: Parser Statement
@@ -88,14 +89,14 @@ instance Executable Statement where
             -- eller kasta ett error med no input ex
             [] -> execute stmts dict input
             x:xs -> 
-                execute stmts (Dictionary.insert str x dict) xs
+                execute stmts (Dictionary.insert (str, x) dict) xs
     execute (Write expr : stmts) dict input = 
         case Expr.value expr dict of
-            Left err -> error err
+            Left s -> error s
             Right v ->
                 v : execute stmts dict input
-    execute (Skip : stmts) dict input = execute stmts dict input
-    execute (Comment ingenbryrsigkommentar: stmts) dict input = execute stmts dict input
+    execute (Skip _: stmts) dict input = execute stmts dict input
+    execute (Comment _: stmts) dict input = execute stmts dict input
 
 instance Parse Statement where
 -- mucho importante att assignment är till höger då keywords spelar roll i ordningen pga require/accept
