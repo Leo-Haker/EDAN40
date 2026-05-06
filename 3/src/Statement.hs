@@ -12,7 +12,7 @@ data Statement =
     While Expr.T Statement|
     Read String |
     Write Expr.T|
-    Skip String |
+    Skip |
     Comment String
     deriving Show
 
@@ -35,7 +35,7 @@ write :: Parser Statement
 write = accept "write" -# Expr.parse #- require ";" >-> Write
 
 skip :: Parser Statement 
-skip = accept "skip" #- require ";" >-> Skip
+skip = accept "skip" #- require ";" >-> \_ -> Skip
 
 comment :: Parser Statement
 comment = Parser.comment >-> Comment
@@ -92,26 +92,26 @@ instance Executable Statement where
             Left s -> error s
             Right v ->
                 v : execute stmts dict input
-    execute (Skip _: stmts) dict input = execute stmts dict input
+    execute (Skip : stmts) dict input = execute stmts dict input
     execute (Comment _: stmts) dict input = execute stmts dict input
 
 instance Parse Statement where
 -- mucho importante att assignment är till höger då keywords spelar roll i ordningen pga require/accept
   parse = begin ! if' ! while ! read' ! write ! skip ! Statement.comment ! assignment 
 
-  toString (Assignment str expr) = str ++ (Expr.toString expr)
+  toString (Assignment str expr) = str ++ " := " ++ (Expr.toString expr)
   
   toString (If cond thenstmt elsestmt) = "if" ++ (Expr.toString cond) ++ " then" ++ (toString thenstmt) ++ "else" ++ (toString elsestmt)
 
   
   toString (Begin stmts)= "begin" ++ (unlines (map toString stmts))
   
-  toString (While cond stmt)= "while" ++ (Expr.toString cond) ++ (toString stmt)
+  toString (While cond stmt)= "while " ++ (Expr.toString cond) ++ " do " ++ (toString stmt) ++ ";"
   
-  toString (Read str)= "read" ++ str
+  toString (Read str)= "read " ++ str ++ ";"
   
-  toString (Write expr)= "write" ++ (toString expr)
+  toString (Write expr)= "write " ++ (Expr.toString expr) ++ ";"
   
-  toString (Skip str) = "skip" ++ str
-  
+  toString (Skip) = "skip;"
+
   toString (Comment str) = "--" ++ str
