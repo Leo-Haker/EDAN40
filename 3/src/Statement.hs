@@ -1,4 +1,4 @@
-module Statement(T, parse, toString, fromString, execute) where
+module Statement(T, parse, toString, fromString, execute, many) where
 import Prelude hiding (return, fail)
 import Parser hiding (T)
 import qualified Dictionary
