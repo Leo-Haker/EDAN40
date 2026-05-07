@@ -121,4 +121,4 @@ instance Parse Statement where
   
   toString Skip = "skip;"
 
-  toString (Comment str) = "--" ++ str
+  toString (Comment str) = "--" ++ str 
