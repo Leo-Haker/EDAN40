@@ -1,3 +1,5 @@
+-- Leo Haker, Kalle Skog
+
 import qualified Program
 
 src :: [Char]
