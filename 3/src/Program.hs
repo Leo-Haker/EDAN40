@@ -1,10 +1,11 @@
+-- Leo Haker, Kalle Skog
 {-# LANGUAGE InstanceSigs #-}
 module Program(T, parse, fromString, toString, exec) where
 import Parser hiding (T)
 import qualified Statement
 import qualified Dictionary
 
-newtype T = Program [Statement.T]-- to be defined
+newtype T = Program [Statement.T]
 
 instance Eq T where
   p1 == p2 = show p1 == show p2

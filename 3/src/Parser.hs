@@ -26,32 +26,17 @@ cons(a, b) = a:b
 (#-) :: Parser a -> Parser b -> Parser a
 (#-) m n = (m # n) >-> fst
 
--- Treat comments as whitespace
--- >>> spaces "\t\t--comment\n"
--- Just ("\t\tcomment","")
--- >>> spaces "-- comment\n"
--- Just (" comment","")
--- >>> spaces "not space!"
--- Just ("","not space!")
 spaces :: Parser String
--- spaces =  error "spaces not implemented"
 spaces =
     -- Reads one whitespace character as a space and return something like [' ']
      let oneSpace = char ? isSpace >-> (:[])  
     -- Reads many whitespace characters and concatenates them
     in iter (comment ! oneSpace) >-> concat
 
--- Treat comments as whitespace
--- >>> comment "--hello!\n"
--- Just ("hello!","")
--- >>> comment "--Not a comment"
--- Nothing
 comment :: Parser String
 comment = dash -# dash -# notNewLine #- newline
     where notNewLine = iter (char ? (/= '\n'))
           dash = char ? (== '-')
-
-
 
 token :: Parser a -> Parser a
 token m = m #- spaces
@@ -62,14 +47,6 @@ letter = char ? isAlpha
 
 word :: Parser String
 word = token (letter # iter letter >-> cons)
-
-
-
-
--- >>> accept "hejsan" "hejsan"
--- >>> chars 3 "hejsan"
--- Just ("hejsan","")
--- Just ("hej","san")
 
 chars :: Int -> Parser String
 chars 0 = return ""
